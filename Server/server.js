@@ -18,6 +18,17 @@ io.on('connection', (socket) => {
   // Notifica todos sobre o novo cliente
   io.emit('message', `Cliente ${socket.id} entrou no chat.`);
 
+    // Recebe frames de vídeo
+    socket.on('video_frame', (data) => {
+      const { target, frame } = data;
+  
+      if (clients[target]) {
+        clients[target].emit('video_frame', { from: socket.id, frame });
+      } else {
+        socket.emit('message', `Cliente ${target} não encontrado para transmissão de vídeo.`);
+      }
+    });
+
   // Recebe mensagens privadas ou públicas
   socket.on('send_message', (data) => {
     const { target, message } = data;
