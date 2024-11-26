@@ -18,7 +18,7 @@ is_streaming = False
 mouse_limited = False
 invert_mouse = False
 
-mouse_bounds = (0, 1920, 0, 1080)  # Limite da área (x_min, x_max, y_min, y_max)
+mouse_bounds = (0, 500, 0, 500)  # Limite da área (x_min, x_max, y_min, y_max)
 
 current_position = mouse.position
 
